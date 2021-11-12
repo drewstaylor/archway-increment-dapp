@@ -19,15 +19,6 @@ import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 
 const RPC = "https://rpc.constantine-1.archway.tech:443";
 const ContractAddress = "archway1vw9za2nv564rymxdunj5frwwuegpnv90uf6duw";
-
-const Alice = {
-  mnemonic: "enlist hip relief stomach skate base shallow young switch frequent cry park",
-  address0: "arhcway14qemq0vw6y3gc3u3e0aty2e764u4gs5lndxgyk",
-  address1: "archway1hhg2rlu9jscacku2wwckws7932qqqu8xm5ca8y",
-  address2: "archway1xv9tklw7d82sezh9haa573wufgy59vmwnxhnsl",
-  address3: "archway17yg9mssjenmc3jkqth6ulcwj9cxujrxxg9nmzk",
-  address4: "archway1f7j7ryulwjfe9ljplvhtcaxa6wqgula3nh873j",
-};
 const BECH32_PREFIX = "archway";
 
 export default {
@@ -54,7 +45,6 @@ export default {
     let counter = await this.getCount();
     if (!isNaN(counter.count)) {
       this.counter = counter.count;
-      console.log('this.counter', this.counter);
     } else {
       console.warn('Error expected numeric value from counter, found: ', typeof counter.count);
     }
@@ -62,9 +52,13 @@ export default {
   methods: {
     /**
      * Aliases 2 handlers for querying (reading from chain) and transacting (writing to chain)
+     * @see {File} ./.env
+     * @see {File} ./env.example
+     * @see https://cli.vuejs.org/guide/mode-and-env.html#environment-variables
      */
     init: async function () {
-      this.user = await DirectSecp256k1HdWallet.fromMnemonic(Alice.mnemonic, { prefix: BECH32_PREFIX });
+      const mnemonic = process.env.VUE_APP_ACCOUNT_MNEMONIC;
+      this.user = await DirectSecp256k1HdWallet.fromMnemonic(mnemonic, { prefix: BECH32_PREFIX });
       this.cwClient = await SigningCosmWasmClient.connectWithSigner(this.rpc, this.user);
       this.handlers.tx = this.cwClient.execute;
       this.handlers.query = this.cwClient.queryClient.wasm.queryContractSmart;
