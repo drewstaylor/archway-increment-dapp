@@ -75,8 +75,7 @@ export default {
   },
   methods: {
     /**
-     * Aliases 2 handlers for querying (reading from chain) and transacting (writing to chain)
-     * and instances basic settings for gas and fee models
+     * Instances basic settings
      * @see {File} ./.env
      * @see {File} ./env.example
      * @see https://cli.vuejs.org/guide/mode-and-env.html#environment-variables
