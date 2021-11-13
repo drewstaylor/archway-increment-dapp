@@ -48,8 +48,7 @@ export default {
       price: null
     },
     handlers: {
-      query: null,
-      tx: null
+      query: null
     },
     loading: {
       status: false,
@@ -88,7 +87,6 @@ export default {
       this.user = await DirectSecp256k1HdWallet.fromMnemonic(mnemonic, { prefix: BECH32_PREFIX });
       this.userAddress = process.env.VUE_APP_ACCOUNT_ADDRESS;
       this.cwClient = await SigningCosmWasmClient.connectWithSigner(this.rpc, this.user);
-      this.handlers.tx = this.cwClient.execute;
       this.handlers.query = this.cwClient.queryClient.wasm.queryContractSmart;
       // Gas
       this.gas.price = GasPrice.fromString('0.002uconst');
@@ -134,6 +132,7 @@ export default {
         console.warn('Error getting user address', this.userAddress);
         return;
       }
+      // Prepare Tx
       let entrypoint = {
         increment: {}
       };
@@ -148,10 +147,12 @@ export default {
         msg: entrypoint, 
         fee: txFee
       });
+      // Send Tx
       let tx = await this.cwClient.execute(this.userAddress, this.contract, entrypoint, txFee);
       this.loading.status = false;
       this.loading.msg = "";
       console.log('Increment Tx', tx);
+      // Update Logs
       if (tx.logs) {
         if (tx.logs.length) {
           this.logs.unshift({
@@ -183,6 +184,7 @@ export default {
         console.warn('Error getting user address', this.userAddress);
         return;
       }
+      // Prepare Tx
       let entrypoint = {
         reset: {
           count: 0
@@ -193,10 +195,12 @@ export default {
         msg: "Resetting counter..."
       };
       let txFee = calculateFee(300_000, this.gas.price);
+      // Send Tx
       let tx = await this.cwClient.execute(this.userAddress, this.contract, entrypoint, txFee);
       console.log('Reset Tx', tx);
       this.loading.status = false;
       this.loading.msg = "";
+      // Update Logs
       if (tx.logs) {
         if (tx.logs.length) {
           this.logs.unshift({
