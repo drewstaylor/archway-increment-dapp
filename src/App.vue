@@ -35,7 +35,7 @@ import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { calculateFee, GasPrice } from "@cosmjs/stargate";
 
 const RPC = "https://rpc.constantine-1.archway.tech:443";
-const ContractAddress = "archway1vw9za2nv564rymxdunj5frwwuegpnv90uf6duw";
+const ContractAddress = process.env.VUE_APP_CONTRACT_ADDRESS;
 const BECH32_PREFIX = "archway";
 
 export default {
@@ -154,7 +154,7 @@ export default {
       console.log('Increment Tx', tx);
       if (tx.logs) {
         if (tx.logs.length) {
-          this.logs.push({
+          this.logs.unshift({
             increment: tx.logs,
             timestamp: new Date().getTime()
           });
@@ -199,7 +199,7 @@ export default {
       this.loading.msg = "";
       if (tx.logs) {
         if (tx.logs.length) {
-          this.logs.push({
+          this.logs.unshift({
             reset: tx.logs,
             timestamp: new Date().getTime()
           });
