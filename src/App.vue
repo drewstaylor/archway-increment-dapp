@@ -20,6 +20,12 @@
     <div class="loading" v-if="loading.status">
       <p v-if="loading.msg">{{loading.msg}}</p>
     </div>
+
+    <div class="logs" v-if="logs.length">
+      <div v-for="(log,i) in logs" :key="i">
+        <pre class="log-entry">{{ log }}</pre>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -142,7 +148,7 @@ export default {
         msg: entrypoint, 
         fee: txFee
       });
-      let tx = await this.handlers.tx(this.userAddress, this.contract, entrypoint, txFee);
+      let tx = await this.cwClient.execute(this.userAddress, this.contract, entrypoint, txFee);
       this.loading.status = false;
       this.loading.msg = "";
       console.log('Increment Tx', tx);
@@ -150,10 +156,17 @@ export default {
         if (tx.logs.length) {
           this.logs.push({
             increment: tx.logs,
-            timestamp: Date().getTime()
+            timestamp: new Date().getTime()
           });
           console.log('Logs Updated', this.logs);
         }
+      }
+      // Refresh counter display
+      let counter = await this.getCount();
+      if (!isNaN(counter.count)) {
+        this.counter = counter.count;
+      } else {
+        console.warn('Error expected numeric value from counter, found: ', typeof counter.count);
       }
     },
     /**
@@ -171,14 +184,16 @@ export default {
         return;
       }
       let entrypoint = {
-        reset: {}
+        reset: {
+          count: 0
+        }
       };
       this.loading = {
         status: true,
         msg: "Resetting counter..."
       };
       let txFee = calculateFee(300_000, this.gas.price);
-      let tx = await this.handlers.tx(this.userAddress, this.contract, entrypoint, txFee);
+      let tx = await this.cwClient.execute(this.userAddress, this.contract, entrypoint, txFee);
       console.log('Reset Tx', tx);
       this.loading.status = false;
       this.loading.msg = "";
@@ -186,10 +201,17 @@ export default {
         if (tx.logs.length) {
           this.logs.push({
             reset: tx.logs,
-            timestamp: Date().getTime()
+            timestamp: new Date().getTime()
           });
           console.log('Logs Updated', this.logs);
         }
+      }
+      // Refresh counter display
+      let counter = await this.getCount();
+      if (!isNaN(counter.count)) {
+        this.counter = counter.count;
+      } else {
+        console.warn('Error expected numeric value from counter, found: ', typeof counter.count);
       }
     }
   }
