@@ -55,12 +55,10 @@ export default {
     },
     loading: {
       status: false,
-      msg: ''
+      msg: ""
     },
     logs: [],
-    queryClient: null,
     rpc: RPC,
-    tendermintClient: null,
     user: null,
     userAddress: null
   }),
