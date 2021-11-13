@@ -23,6 +23,9 @@
 
     <div class="logs" v-if="logs.length">
       <div v-for="(log,i) in logs" :key="i">
+        <p class="label" v-if="log.timestamp">
+          <strong><span v-if="log.increment">Counter Incremented&nbsp;</span><span v-if="log.reset">Counter Reset&nbsp;</span>({{log.timestamp}}):</strong>
+        </p>
         <pre class="log-entry">{{ log }}</pre>
       </div>
     </div>
@@ -139,7 +142,7 @@ export default {
         status: true,
         msg: "Incrementing counter..."
       };
-      let txFee = calculateFee(300_000, this.gas.price);
+      let txFee = calculateFee(300_000, this.gas.price); // XXX TODO: Fix gas estimation
       console.log('Tx args', {
         senderAddress: this.userAddress, 
         contractAddress: this.contract, 
@@ -193,7 +196,7 @@ export default {
         status: true,
         msg: "Resetting counter..."
       };
-      let txFee = calculateFee(300_000, this.gas.price);
+      let txFee = calculateFee(300_000, this.gas.price); // XXX TODO: Fix gas estimation
       // Send Tx
       let tx = await this.cwClient.execute(this.userAddress, this.contract, entrypoint, txFee);
       console.log('Reset Tx', tx);
@@ -233,13 +236,33 @@ export default {
 div.content {
   text-align: left;
   margin: auto;
-  max-width: 90vw;
+  margin-top: 3em;
+  width: 90vw;
+  max-width: 1280px;
 }
 div.content ul {
   list-style: none;
+  padding-left: 0;
 }
 button {
   margin: 1rem;
   padding: 0.25rem;
+}
+p.label {
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+pre {
+  line-height:1.2em;
+  background:linear-gradient(180deg,#ccc 0,#ccc 1.2em,#eee 0);
+  background-size:2.4em 2.4em;
+  background-origin:content-box;
+  padding: 1em;
+  text-align:justify;
+  display: inline-block;
+  color: #0a4862;
+  background-color: #73c8eb;
+  border-color: #3bb3e3;
+  border-radius: 0.5em;
 }
 </style>
